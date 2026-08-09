@@ -1,5 +1,18 @@
 # ==========================================
-# Configuración Global y Editores
+# Entorno Local y Secretos (¡CRÍTICO!)
+# ==========================================
+.env
+.env.local
+.env.*.local
+backend/.env
+client/assets/.env
+# Sí incluir los ejemplos
+!.env.example
+!backend/.env.example
+!client/.env.example
+
+# ==========================================
+# Editores e IDEs
 # ==========================================
 .vscode/
 .idea/
@@ -11,13 +24,15 @@
 *~
 
 # ==========================================
-# Entorno Local y Secretos (¡Crítico!)
+# Backend — Java / Maven
 # ==========================================
-.env
-.env.local
-.env.*.local
-backend/.env
-!backend/.env.example
+backend/target/
+backend/.classpath
+backend/.project
+backend/.settings/
+backend/*.class
+hs_err_pid*.log
+replay_pid*.log
 
 # ==========================================
 # Base de Datos y Docker
@@ -26,66 +41,44 @@ backend/.env
 /pgdata/
 
 # ==========================================
-# Backend (Python / FastAPI / Alembic)
+# Frontend — Flutter / Dart
 # ==========================================
-__pycache__/
-*.py[cod]
-*$py.class
-.pytest_cache/
-.ruff_cache/
-.mypy_cache/
-venv/
-.venv/
-env/
-pip-log.txt
-pip-delete-this-directory.txt
-alembic.ini
+client/build/
+client/.dart_tool/
+client/.packages
+client/.pub-cache/
+client/.pub/
+client/.flutter-plugins
+client/.flutter-plugins-dependencies
+client/.metadata
+client/pubspec.lock
+
+# Directorios nativos generados
+client/android/
+client/ios/
+client/macos/
 
 # ==========================================
-# Frontend (Flutter / Dart)
-# ==========================================
-build/
-.dart_tool/
-.packages
-.pub-cache/
-.pub/
-/frontend/.flutter-plugins
-/frontend/.flutter-plugins-dependencies
-/frontend/.metadata
-pubspec.lock
-pubspec.yaml
-
-# Excluir directorios nativos si no vas a tocarlos, o sus compilaciones internas
-/frontend/android/
-/frontend/ios/
-/frontend/linux/
-/frontend/macos/
-/frontend/windows/
-
-# Ejecutables de Flutter nativo en Linux
-/frontend/linux/flutter/ephemeral/
-
-# ==========================================
-# Herramientas de Contexto e IA (Repomix / Agents)
+# Herramientas de Contexto e IA
 # ==========================================
 repomix-output.xml
 .agents/
 AGENTS.md
-prompts
+ayudas_agentes/
 repomix.config.json
-estructura_bbdd.sql
+schema_para_agente.md
 .pre-commit-config.yaml
 .claude
-.claude/*
 .claude-flow
-.claude-flow/*
 .mcp.json
 ruvector.db
 .swarm
 CLAUDE.md
 
 # ==========================================
-# Comandos y miscelánea
+# Miscelánea
 # ==========================================
 coman.txt
 revisar.txt
+*.DS_Store
+Thumbs.db
