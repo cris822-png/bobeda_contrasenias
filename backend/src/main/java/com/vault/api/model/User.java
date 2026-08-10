@@ -14,12 +14,16 @@ import java.util.UUID;
  *    to re-derive the KEK from the master password on unlock.
  */
 @Entity
-@Table(name = "users")
+@Table(name = "users", schema = "vault")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
+    /** Human-chosen login name. Stored as CITEXT (case-insensitive) in PostgreSQL. */
+    @Column(nullable = false, unique = true, updatable = false)
+    private String username;
 
     @Column(nullable = false)
     private byte[] salt;
@@ -46,6 +50,9 @@ public class User {
 
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }
+
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
 
     public byte[] getSalt() { return salt; }
     public void setSalt(byte[] salt) { this.salt = salt; }

@@ -3,16 +3,12 @@ package com.vault.api.controller;
 import com.vault.api.model.dto.RegisterRequest;
 import com.vault.api.model.dto.UnlockRequest;
 import com.vault.api.model.dto.UnlockResponse;
-import com.vault.api.security.JwtTokenProvider;
 import com.vault.api.service.AuthService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -34,15 +30,14 @@ public class AuthController {
 
     /**
      * Register a new user.
-     * Returns 201 with the new user's UUID in the Location header and body.
+     * Returns 201 No Content — the user logs in with the username they just chose.
+     * The internal UUID is not exposed.
      */
     @PostMapping("/register")
-    public ResponseEntity<Map<String, String>> register(
+    public ResponseEntity<Void> register(
             @Valid @RequestBody RegisterRequest request) {
-        UUID userId = authService.register(request);
-        return ResponseEntity
-                .created(URI.create("/vault/entries"))
-                .body(Map.of("userId", userId.toString()));
+        authService.register(request);
+        return ResponseEntity.status(201).build();
     }
 
     /**

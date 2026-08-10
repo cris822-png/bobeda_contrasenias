@@ -22,8 +22,8 @@ import java.util.UUID;
  *   - The master password String is converted to char[] immediately and cleared after use.
  *   - A generic "Invalid credentials" message is returned for all auth failures
  *     to prevent user enumeration.
- *   - Registration intentionally has NO username — each server installation has
- *     one (or a few) users identified by UUID only.
+ *   - Users are identified by a human-chosen username; the internal UUID is
+ *     never returned to or typed by the user.
  */
 @Service
 public class AuthService {
@@ -48,20 +48,28 @@ public class AuthService {
 
     /**
      * Registers a new user. Generates a salt, wraps a new DEK, and persists
-     * the cryptographic parameters. Returns the new user's UUID.
+     * the cryptographic parameters. Returns nothing — the username they chose
+     * is all they need to log in.
+     *
+     * @throws VaultException 409 if the username is already taken.
      */
     @Transactional
-    public UUID register(RegisterRequest request) {
-        // Convert String → char[] immediately, then null the reference
+    public void register(RegisterRequest request) {
+        // Trim and validate username uniqueness before doing any crypto work
+        String username = request.username().trim();
+        if (userRepository.existsByUsername(username)) {
+            throw VaultException.conflict("Username already taken");
+        }
+
+        // Convert String → char[] immediately, then work with char[]
         char[] masterPassword = request.masterPassword().toCharArray();
-        // request.masterPassword() reference will be GC'd; we can't zero the String
-        // but we work with the char[] from here on.
 
         byte[] salt = kdfService.generateSalt();
         DekManager.WrapResult wrap = dekManager.wrapNewDek(masterPassword, salt);
         // masterPassword is zeroed inside wrapNewDek
 
         User user = new User();
+        user.setUsername(username);
         user.setSalt(salt);
         user.setKdfAlgorithm("argon2id");
         user.setKdfIterations(KdfService.ITERATIONS);
@@ -69,28 +77,25 @@ public class AuthService {
         user.setDekWrapped(wrap.wrappedDek());
         user.setDekIv(wrap.iv());
 
-        User saved = userRepository.save(user);
-        return saved.getId();
+        userRepository.save(user);
+        // UUID is intentionally not returned — user logs in by username only
     }
 
     /**
      * Verifies the master password by attempting to unwrap the DEK.
      * On success, caches the DEK and returns a JWT.
      *
-     * @throws VaultException with 401 if the user is not found or password is wrong.
+     * @throws VaultException 401 if the username is not found or the password is wrong.
      */
     public UnlockResponse unlock(UnlockRequest request) {
-        UUID userId;
-        try {
-            userId = UUID.fromString(request.userId());
-        } catch (IllegalArgumentException e) {
-            // Don't reveal whether the user exists
-            throw VaultException.unauthorized("Invalid credentials");
-        }
+        String username = request.username().trim();
 
-        User user = userRepository.findById(userId)
+        // Look up by username; same generic error for "not found" and "wrong password"
+        // to prevent user enumeration.
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> VaultException.unauthorized("Invalid credentials"));
 
+        UUID userId = user.getId();
         char[] masterPassword = request.masterPassword().toCharArray();
         try {
             dekManager.unlockAndCache(

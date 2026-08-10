@@ -37,18 +37,18 @@ class ApiClient {
 
   // ─── Auth ────────────────────────────────────────────────────────────────
 
-  /// Registers a new user. Returns the userId UUID string.
-  Future<String> register(String masterPassword) async {
-    final resp = await _dio.post('/auth/register', data: {
+  /// Registers a new user.
+  Future<void> register(String username, String masterPassword) async {
+    await _dio.post('/auth/register', data: {
+      'username': username,
       'masterPassword': masterPassword,
     });
-    return resp.data['userId'] as String;
   }
 
   /// Unlocks the vault. Stores the JWT token in memory on success.
-  Future<void> unlock(String userId, String masterPassword) async {
+  Future<void> unlock(String username, String masterPassword) async {
     final resp = await _dio.post('/auth/unlock', data: {
-      'userId': userId,
+      'username': username,
       'masterPassword': masterPassword,
     });
     _token = resp.data['token'] as String;

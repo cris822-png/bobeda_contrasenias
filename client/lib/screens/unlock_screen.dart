@@ -17,7 +17,7 @@ class UnlockScreen extends StatefulWidget {
 class _UnlockScreenState extends State<UnlockScreen>
     with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
-  final _userIdCtrl = TextEditingController();
+  final _usernameCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   final _storage = SecureStorageService();
 
@@ -34,20 +34,20 @@ class _UnlockScreenState extends State<UnlockScreen>
         vsync: this, duration: const Duration(milliseconds: 600));
     _fadeAnim = CurvedAnimation(parent: _fadeCtrl, curve: Curves.easeOut);
     _fadeCtrl.forward();
-    _loadSavedUserId();
+    _loadSavedUsername();
   }
 
-  Future<void> _loadSavedUserId() async {
-    final saved = await _storage.loadUserId();
+  Future<void> _loadSavedUsername() async {
+    final saved = await _storage.loadUsername();
     if (saved != null && mounted) {
-      _userIdCtrl.text = saved;
+      _usernameCtrl.text = saved;
     }
   }
 
   @override
   void dispose() {
     _fadeCtrl.dispose();
-    _userIdCtrl.dispose();
+    _usernameCtrl.dispose();
     _passwordCtrl.dispose();
     super.dispose();
   }
@@ -58,7 +58,7 @@ class _UnlockScreenState extends State<UnlockScreen>
 
     final auth = context.read<AuthState>();
     final success = await auth.unlock(
-      _userIdCtrl.text.trim(),
+      _usernameCtrl.text.trim(),
       _passwordCtrl.text,
     );
 
@@ -66,7 +66,7 @@ class _UnlockScreenState extends State<UnlockScreen>
     setState(() => _loading = false);
 
     if (success) {
-      await _storage.saveUserId(_userIdCtrl.text.trim());
+      await _storage.saveUsername(_usernameCtrl.text.trim());
     }
   }
 
@@ -103,18 +103,18 @@ class _UnlockScreenState extends State<UnlockScreen>
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Introduce tu ID de usuario y contraseña maestra',
+                      'Introduce tu nombre de usuario y contraseña maestra',
                       style: theme.textTheme.bodyMedium?.copyWith(
                           color: const Color(0xFF94A3B8)),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 40),
 
-                    // ─── User ID ────────────────────────────────────────
+                    // ─── Username ────────────────────────────────────────
                     TextFormField(
-                      controller: _userIdCtrl,
+                      controller: _usernameCtrl,
                       decoration: const InputDecoration(
-                        labelText: 'ID de usuario (UUID)',
+                        labelText: 'Nombre de usuario',
                         prefixIcon: Icon(Icons.person_outline),
                       ),
                       validator: (v) =>

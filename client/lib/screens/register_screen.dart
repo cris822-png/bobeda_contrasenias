@@ -14,16 +14,18 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _usernameCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   final _confirmCtrl = TextEditingController();
 
   bool _loading = false;
   bool _showPassword = false;
-  String? _newUserId;
+  bool _success = false;
   String? _error;
 
   @override
   void dispose() {
+    _usernameCtrl.dispose();
     _passwordCtrl.dispose();
     _confirmCtrl.dispose();
     super.dispose();
@@ -34,14 +36,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() { _loading = true; _error = null; });
 
     final auth = context.read<AuthState>();
-    final userId = await auth.register(_passwordCtrl.text);
+    final error = await auth.register(_usernameCtrl.text.trim(), _passwordCtrl.text);
     if (!mounted) return;
 
-    if (userId != null) {
-      setState(() { _newUserId = userId; _loading = false; });
+    if (error == null) {
+      setState(() { _success = true; _loading = false; });
     } else {
       setState(() {
-        _error = auth.error ?? 'Error al registrar';
+        _error = error;
         _loading = false;
       });
     }
@@ -74,8 +76,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           padding: const EdgeInsets.all(32),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 420),
-            child: _newUserId != null
-                ? _SuccessCard(userId: _newUserId!, onDone: () =>
+            child: _success
+                ? _SuccessCard(onDone: () =>
                     Navigator.of(context).pop())
                 : Form(
                     key: _formKey,
@@ -99,6 +101,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 32),
+
+                        // ─── Username ──────────────────────────────────
+                        TextFormField(
+                          controller: _usernameCtrl,
+                          decoration: const InputDecoration(
+                            labelText: 'Nombre de usuario',
+                            prefixIcon: Icon(Icons.person_outline),
+                          ),
+                          validator: (v) {
+                            if (v == null || v.trim().isEmpty) return 'Requerido';
+                            if (v.trim().length < 3) return 'Mínimo 3 caracteres';
+                            if (v.trim().length > 32) return 'Máximo 32 caracteres';
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
 
                         // ─── Password ──────────────────────────────────
                         TextFormField(
@@ -181,9 +199,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 // ─── Success card ────────────────────────────────────────────────────────────
 
 class _SuccessCard extends StatelessWidget {
-  final String userId;
   final VoidCallback onDone;
-  const _SuccessCard({required this.userId, required this.onDone});
+  const _SuccessCard({required this.onDone});
 
   @override
   Widget build(BuildContext context) {
@@ -197,24 +214,9 @@ class _SuccessCard extends StatelessWidget {
             textAlign: TextAlign.center),
         const SizedBox(height: 12),
         const Text(
-          'Guarda tu ID de usuario en un lugar seguro. Lo necesitarás para desbloquear la bóveda.',
+          'Inicia sesión con tu nuevo nombre de usuario y contraseña maestra.',
           textAlign: TextAlign.center,
           style: TextStyle(color: Color(0xFF94A3B8)),
-        ),
-        const SizedBox(height: 24),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: const Color(0xFF1A1D27),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFF2D3748)),
-          ),
-          child: SelectableText(
-            userId,
-            style: const TextStyle(
-                fontFamily: 'monospace', fontSize: 13, color: Color(0xFF6C63FF)),
-            textAlign: TextAlign.center,
-          ),
         ),
         const SizedBox(height: 32),
         ElevatedButton(
