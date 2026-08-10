@@ -39,4 +39,8 @@ public class VaultException extends RuntimeException {
     public static VaultException internal(String message) {
         return new VaultException(HttpStatus.INTERNAL_SERVER_ERROR, message);
     }
+
+    public static VaultException tooManyRequests(String message) {
+        return new VaultException(HttpStatus.TOO_MANY_REQUESTS, message);
+    }
 }

@@ -22,7 +22,7 @@ public class User {
     private UUID id;
 
     /** Human-chosen login name. Stored as CITEXT (case-insensitive) in PostgreSQL. */
-    @Column(nullable = false, unique = true, updatable = false)
+    @Column(nullable = false, unique = true, updatable = false, columnDefinition = "citext")
     private String username;
 
     @Column(nullable = false)

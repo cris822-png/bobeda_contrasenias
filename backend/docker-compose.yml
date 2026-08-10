@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:17
+    container_name: vault_postgres
+    environment:
+      POSTGRES_USER: ${DB_USER:-bob}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
+      POSTGRES_DB: ${DB_NAME:-vault_db}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp
+      - /var/run/postgresql
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: vault_redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp
+    volumes:
+      - redis_data:/data
+    # command: redis-server --requirepass ${REDIS_PASSWORD:-secret} # Uncomment if using a password
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  redisdata:
