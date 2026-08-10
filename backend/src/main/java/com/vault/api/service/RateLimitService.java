@@ -43,18 +43,11 @@ public class RateLimitService {
      * @return true if the request is allowed, false if rate limited (HTTP 429)
      */
     public boolean isAllowed(String key, int maxRequests, int windowSeconds) {
-        try {
-            Long count = redisTemplate.execute(
-                redisScript,
-                Collections.singletonList(key),
-                String.valueOf(windowSeconds)
-            );
-            return count != null && count <= maxRequests;
-        } catch (Exception e) {
-            // Fail-open: if Redis goes down, allow the request so the API doesn't completely break,
-            // but log an error so we know rate limiting is disabled.
-            log.error("Failed to check rate limit for key {}: {}", key, e.getMessage());
-            return true;
-        }
+        Long count = redisTemplate.execute(
+            redisScript,
+            Collections.singletonList(key),
+            String.valueOf(windowSeconds)
+        );
+        return count != null && count <= maxRequests;
     }
 }
