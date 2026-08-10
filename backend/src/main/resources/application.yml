@@ -16,6 +16,7 @@ spring:
     show-sql: false
     properties:
       hibernate:
+        default_schema: vault
         dialect: org.hibernate.dialect.PostgreSQLDialect
         jdbc:
           lob:
@@ -26,6 +27,8 @@ spring:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: false
+    schemas: vault
+    default-schema: vault
 
   # ─── Security: disable default form login page ─────────────
   security:

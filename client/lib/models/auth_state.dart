@@ -17,6 +17,10 @@ class AuthState extends ChangeNotifier {
   String? get userId => _userId;
   String? get error => _error;
 
+  /// The shared HTTP client that holds the active JWT in memory.
+  /// Screens must use this instance — never create their own ApiClient().
+  ApiClient get api => _api;
+
   /// Registers a new user. Returns the userId string on success.
   Future<String?> register(String masterPassword) async {
     _error = null;

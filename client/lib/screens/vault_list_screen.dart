@@ -17,7 +17,9 @@ class VaultListScreen extends StatefulWidget {
 }
 
 class _VaultListScreenState extends State<VaultListScreen> {
-  final _api = ApiClient();
+  // Resolved in initState — must use AuthState's shared ApiClient so the
+  // JWT token set during unlock is present on every request.
+  late final ApiClient _api;
   final _searchCtrl = TextEditingController();
 
   List<VaultEntry> _entries = [];
@@ -28,6 +30,8 @@ class _VaultListScreenState extends State<VaultListScreen> {
   @override
   void initState() {
     super.initState();
+    // Grab the token-bearing client from the auth state.
+    _api = context.read<AuthState>().api;
     _searchCtrl.addListener(_applyFilter);
     _loadEntries();
   }
