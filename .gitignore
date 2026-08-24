@@ -10,6 +10,7 @@ client/assets/.env
 !.env.example
 !backend/.env.example
 !client/.env.example
+.venv
 
 # ==========================================
 # Editores e IDEs
