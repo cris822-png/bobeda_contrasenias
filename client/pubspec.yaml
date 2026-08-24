@@ -21,7 +21,7 @@ dependencies:
   provider: ^6.1.5
 
   # ─── Secure storage (session token in memory; Android Keystore on mobile)
-  flutter_secure_storage: ^11.0.0
+  flutter_secure_storage: ^9.0.0
 
   # ─── UI ──────────────────────────────────────────────────────────────────
   google_fonts: ^6.2.1
