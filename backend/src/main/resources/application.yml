@@ -4,7 +4,7 @@ spring:
 
   # ─── DataSource ────────────────────────────────────────────
   datasource:
-    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=${DB_SSL_MODE}
+    url: ${DATABASE_URL:jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=${DB_SSL_MODE:prefer}}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
@@ -12,6 +12,7 @@ spring:
   # ─── Redis ──────────────────────────────────────────────────
   data:
     redis:
+      url: ${REDIS_URL:}
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD:}
@@ -45,7 +46,7 @@ spring:
 
 # ─── Server ────────────────────────────────────────────────
 server:
-  port: ${API_PORT:8443}
+  port: ${PORT:${API_PORT:8443}}
   # For HTTPS in production, configure ssl.key-store etc.
   # For local dev the server listens on plain HTTP on the configured port.
 

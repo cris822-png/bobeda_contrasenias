@@ -5,11 +5,11 @@ services:
     image: postgres:17
     container_name: vault_postgres
     environment:
-      POSTGRES_USER: ${DB_USER:-bob}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
-      POSTGRES_DB: ${DB_NAME:-vault_db}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
-      - "${DB_PORT:-5432}:5432"
+      - "${DB_PORT}:5432"
     read_only: true
     security_opt:
       - no-new-privileges:true
