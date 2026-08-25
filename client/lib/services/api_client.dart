@@ -13,11 +13,14 @@ class ApiClient {
   String? _token;
 
   ApiClient() {
-    final baseUrl = dotenv.env['API_BASE_URL'] ?? 'http://localhost:8443';
+    final baseUrl = dotenv.env['API_BASE_URL'];
+    if (baseUrl == null) {
+      throw Exception('API_BASE_URL no está definida en el archivo .env');
+    }
     _dio = Dio(BaseOptions(
       baseUrl: baseUrl,
-      connectTimeout: const Duration(seconds: 60),
-      receiveTimeout: const Duration(seconds: 70),
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 15),
       headers: {'Content-Type': 'application/json'},
     ));
 
