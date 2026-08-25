@@ -26,25 +26,26 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            // Stateless REST API — no HTTP sessions
-            .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // Stateless REST API — no HTTP sessions
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-            // CSRF not needed for stateless JWT APIs
-            .csrf(csrf -> csrf.disable())
+                // CSRF not needed for stateless JWT APIs
+                .csrf(csrf -> csrf.disable())
 
-            // Authorization rules
-            .authorizeHttpRequests(auth -> auth
-                // Public endpoints
-                .requestMatchers(HttpMethod.POST, "/auth/register", "/auth/unlock").permitAll()
-                // Everything else requires a valid JWT
-                .anyRequest().authenticated()
-            )
+                // Authorization rules
+                .authorizeHttpRequests(auth -> auth
+                        // Public endpoints
+                        .requestMatchers(HttpMethod.GET, "/health").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/register", "/auth/unlock").permitAll()
+                        // Everything else requires a valid JWT
+                        .anyRequest().authenticated())
 
-            // Plug in JWT filter before Spring's username/password filter
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                // Plug in JWT filter before Spring's username/password filter
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
 
-            // Plug in Rate Limit filter after JWT filter (so it has the user context if authenticated)
-            .addFilterAfter(rateLimitFilter, JwtAuthFilter.class);
+                // Plug in Rate Limit filter after JWT filter (so it has the user context if
+                // authenticated)
+                .addFilterAfter(rateLimitFilter, JwtAuthFilter.class);
 
         return http.build();
     }
