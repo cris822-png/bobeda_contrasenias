@@ -47,6 +47,7 @@ spring:
 # ─── Server ────────────────────────────────────────────────
 server:
   port: ${PORT:${API_PORT:8443}}
+  forward-headers-strategy: framework
   # For HTTPS in production, configure ssl.key-store etc.
   # For local dev the server listens on plain HTTP on the configured port.
 
@@ -69,7 +70,7 @@ vault:
 logging:
   level:
     root: INFO
-    com.vault: DEBUG
+    com.vault: INFO
     # IMPORTANT: Never set com.vault.api.crypto to TRACE or DEBUG in production.
     com.vault.api.crypto: INFO
   pattern:
